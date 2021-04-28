@@ -41,7 +41,8 @@ public class PowerOutageDAO {
 		
 		String sql = "SELECT customers_affected, date_event_finished, date_event_began "
 				+ "FROM poweroutages "
-				+ "WHERE nerc_id = ?";
+				+ "WHERE nerc_id = ? "
+				+ "ORDER BY date_event_began DESC";
 		
 		List<PowerOutage> outagesList = new ArrayList<>();
 
@@ -54,7 +55,7 @@ public class PowerOutageDAO {
 			while (res.next()) {
 				LocalDateTime fine = res.getTimestamp("date_event_finished").toLocalDateTime();
 				LocalDateTime inizio = res.getTimestamp("date_event_began").toLocalDateTime();
-				outagesList.add(new PowerOutage(id, res.getInt("customes_affected"), fine, inizio));
+				outagesList.add(new PowerOutage(id, res.getInt("customers_affected"), fine, inizio));
 			}
 
 			conn.close();

@@ -6,6 +6,7 @@ public class TestModel {
 		
 		Model model = new Model();
 		System.out.println(model.getNercList());
+		System.out.println(model.worstCase(3, 4, 200));
 
 	}
 

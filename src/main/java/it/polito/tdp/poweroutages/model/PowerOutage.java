@@ -18,7 +18,7 @@ public class PowerOutage {
 		this.clientiColpiti = clientiColpiti;
 		this.fine = fine;
 		this.inizio = inizio;
-		this.durata = fine.until(inizio, ChronoUnit.HOURS);
+		this.durata = inizio.until(fine, ChronoUnit.HOURS);
 	}
 
 	public long getDurata() {
@@ -39,6 +39,12 @@ public class PowerOutage {
 
 	public LocalDateTime getInizio() {
 		return inizio;
+	}
+
+	@Override
+	public String toString() {
+		return "Inizio=" + inizio + " Fine=" + fine + " Durata=" + durata + " ClientiColpiti="
+				+ clientiColpiti + "\n";
 	}
 	
 	

@@ -8,12 +8,12 @@ import it.polito.tdp.poweroutages.DAO.PowerOutageDAO;
 
 public class Model {
 	
-	PowerOutageDAO podao;
-	List<PowerOutage> soluzione;
-	int anni;
-	long oreMax;
-	long worst;
-	List<PowerOutage> tutti;
+	private PowerOutageDAO podao;
+	private List<PowerOutage> soluzione;
+	private int anni;
+	private long oreMax;
+	private int worst;
+	private List<PowerOutage> tutti;
 	
 	public Model() {
 		podao = new PowerOutageDAO();
@@ -27,39 +27,60 @@ public class Model {
 		
 		this.tutti = podao.getPowerOutages(id);
 		
-		this.soluzione = new ArrayList<>();
+		this.soluzione = new ArrayList<PowerOutage>();
 		this.anni = anni;
 		this.oreMax = oreMax;
 		this.worst = 0;
-		cercaPeggiore(new ArrayList<PowerOutage>(), 0);
+		cercaPeggiore(new ArrayList<PowerOutage>(), 0, 0);
 		
 		return soluzione;
 	}
 
-	private void cercaPeggiore(List<PowerOutage> parziale, long oreGuaste) {
+	private void cercaPeggiore(List<PowerOutage> parziale, int livello, int utentiColpiti) {
 		
-		if (oreGuaste>worst) {
-			this.soluzione = parziale;
+		if (livello == tutti.size()-1) {
+			if (utentiColpiti>worst) {
+				this.soluzione = new ArrayList<PowerOutage>(parziale);
+				this.worst = utentiColpiti;
+			}
+			return;
 		} else {
 			for (PowerOutage p : this.tutti) {
-				parziale.add(p);
-				if (isValida(parziale))
-					cercaPeggiore(parziale,oreGuaste + p.getDurata());
-				parziale.remove(p);
+				if (parziale.size()==0) {
+					parziale.add(p);
+					if (isValida(parziale))
+						cercaPeggiore(parziale, tutti.indexOf(p), utentiColpiti + p.getClientiColpiti());
+					parziale.remove(p);
+				}
+				else if (!parziale.contains(p) && !p.getInizio().isAfter(parziale.get(parziale.size()-1).getInizio())) {
+					parziale.add(p);
+					if (isValida(parziale))
+						cercaPeggiore(parziale, tutti.indexOf(p), utentiColpiti + p.getClientiColpiti());
+					parziale.remove(p);
+				}
 			}
 		}
 		
 	}
 
-	private boolean isValida(List<PowerOutage> parziale) {
+	public int getWorst() {
+		return worst;
+	}
+	
+	public long getHours(List<PowerOutage> parziale) {
 		long oreTot = 0;
 		for (PowerOutage p : parziale) {
 			oreTot += p.getDurata();
 		}
+		return oreTot;
+	}
+
+	private boolean isValida(List<PowerOutage> parziale) {
+		long oreTot = this.getHours(parziale);
 		if (oreTot>this.oreMax) {
 			return false;
 		}
-		if (parziale.get(0).getFine().until(parziale.get(parziale.size()-1).getInizio(), ChronoUnit.YEARS)>this.anni) {
+		if (parziale.get(parziale.size()-1).getInizio().until(parziale.get(0).getFine(), ChronoUnit.YEARS)>this.anni) {
 			return false;
 		}
 		return true;
