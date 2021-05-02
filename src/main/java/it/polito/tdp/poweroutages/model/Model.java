@@ -31,7 +31,7 @@ public class Model {
 		this.anni = anni;
 		this.oreMax = oreMax;
 		this.worst = 0;
-		cercaPeggiore(new ArrayList<PowerOutage>(), 0, 0);
+		cercaPeggiore(new ArrayList<PowerOutage>(), -1, 0);
 		
 		return soluzione;
 	}
