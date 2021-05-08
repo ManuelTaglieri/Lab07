@@ -31,36 +31,31 @@ public class Model {
 		this.anni = anni;
 		this.oreMax = oreMax;
 		this.worst = 0;
-		cercaPeggiore(new ArrayList<PowerOutage>(), -1, 0);
+		cercaPeggiore(new ArrayList<PowerOutage>(), 0);
 		
 		return soluzione;
 	}
 
-	private void cercaPeggiore(List<PowerOutage> parziale, int livello, int utentiColpiti) {
+	private void cercaPeggiore(List<PowerOutage> parziale, int utentiColpiti) {
 		
-		if (livello == tutti.size()-1) {
-			if (utentiColpiti>worst) {
+		if (utentiColpiti>worst) {
 				this.soluzione = new ArrayList<PowerOutage>(parziale);
 				this.worst = utentiColpiti;
 			}
-			return;
-		} else {
-			for (PowerOutage p : this.tutti) {
+		for (PowerOutage p : this.tutti) {
 				if (parziale.size()==0) {
 					parziale.add(p);
 					if (isValida(parziale))
-						cercaPeggiore(parziale, tutti.indexOf(p), utentiColpiti + p.getClientiColpiti());
+						cercaPeggiore(parziale, utentiColpiti + p.getClientiColpiti());
 					parziale.remove(p);
 				}
 				else if (!parziale.contains(p) && !p.getInizio().isAfter(parziale.get(parziale.size()-1).getInizio())) {
 					parziale.add(p);
 					if (isValida(parziale))
-						cercaPeggiore(parziale, tutti.indexOf(p), utentiColpiti + p.getClientiColpiti());
+						cercaPeggiore(parziale, utentiColpiti + p.getClientiColpiti());
 					parziale.remove(p);
 				}
 			}
-		}
-		
 	}
 
 	public int getWorst() {
